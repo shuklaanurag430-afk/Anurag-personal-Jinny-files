@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ Jinny — AI Agent Dashboard</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-card: #1c2128;
+    --bg-hover: #21262d;
+    --border: #30363d;
+    --border-soft: #21262d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --accent-teal: #7ee8d0;
+    --accent-purple: #d2a8ff;
+    --accent-amber: #ffc107;
+    --accent-green: #3fb950;
+    --accent-red: #f85149;
+    --accent-blue: #58a6ff;
+    --accent-pink: #f778ba;
+    --accent-orange: #d29922;
+    --gradient-teal: linear-gradient(135deg, #7ee8d0, #58a6ff);
+    --gradient-purple: linear-gradient(135deg, #d2a8ff, #f778ba);
+    --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+  }
+  .sidebar-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    background: var(--gradient-teal);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.3px;
+  }
+  .sidebar-header .subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    -webkit-text-fill-color: var(--text-muted);
+  }
+  .sidebar-nav { padding: 12px 0; }
+  .sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.15s ease;
+    border-left: 3px solid transparent;
+  }
+  .sidebar-nav a:hover, .sidebar-nav a.active {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    border-left-color: var(--accent-teal);
+  }
+  .sidebar-nav a .icon { font-size: 16px; width: 20px; text-align: center; }
+  .sidebar-nav a .badge {
+    margin-left: auto;
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    background: var(--bg-hover);
+    color: var(--text-muted);
+  }
+  .sidebar-section-label {
+    padding: 16px 20px 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  /* Main Content */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 0;
+    max-width: calc(100vw - 260px);
+  }
+
+  /* Hero */
+  .hero {
+    padding: 48px 40px 32px;
+    background: linear-gradient(180deg, rgba(126,232,208,0.06) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .hero h1 .name {
+    background: var(--gradient-teal);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-top: 6px;
+    max-width: 600px;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 0;
+    padding: 20px 40px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 28px 0 0;
+    border-right: 1px solid var(--border);
+    margin-right: 28px;
+  }
+  .stat-item:last-child { border-right: none; margin-right: 0; }
+  .stat-value { font-size: 24px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: -2px; }
+  .stat-icon { font-size: 28px; opacity: 0.7; }
+
+  /* Sections */
+  .section {
+    padding: 32px 40px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .section-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .section-header .emoji { font-size: 22px; }
+  .section-subtitle { font-size: 13px; color: var(--text-muted); margin-top: -12px; margin-bottom: 20px; }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .card-grid-2 { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }
+  .card-grid-3 { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .card-grid-4 { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover {
+    border-color: var(--text-muted);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .card-meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .card-meta span {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Status badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-ready { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+  .badge-setup { background: rgba(210,153,34,0.15); color: var(--accent-orange); }
+  .badge-error { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+  .badge-ok { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+  .badge-info { background: rgba(88,166,255,0.15); color: var(--accent-blue); }
+  .badge-purple { background: rgba(210,168,255,0.15); color: var(--accent-purple); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot-green { background: var(--accent-green); box-shadow: 0 0 6px rgba(63,185,80,0.4); }
+  .dot-yellow { background: var(--accent-orange); box-shadow: 0 0 6px rgba(210,153,34,0.4); }
+  .dot-red { background: var(--accent-red); box-shadow: 0 0 6px rgba(248,81,73,0.4); }
+  .dot-blue { background: var(--accent-blue); box-shadow: 0 0 6px rgba(88,166,255,0.4); }
+
+  /* Tree view */
+  .tree { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; }
+  .tree-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  .tree-item:hover { color: var(--text-primary); }
+  .tree-item .arrow { font-size: 10px; width: 12px; transition: transform 0.15s; }
+  .tree-item .arrow.open { transform: rotate(90deg); }
+  .tree-item .folder-icon { color: var(--accent-blue); }
+  .tree-item .file-icon { color: var(--text-muted); }
+  .tree-children { padding-left: 20px; }
+  .tree-children.hidden { display: none; }
+  .tree-item .file-size { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+  /* Info table */
+  .info-table { width: 100%; border-collapse: collapse; }
+  .info-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
+  }
+  .info-table td:first-child {
+    color: var(--text-muted);
+    width: 180px;
+    font-weight: 500;
+  }
+  .info-table tr:last-child td { border-bottom: none; }
+
+  /* Cron styles */
+  .cron-card { position: relative; }
+  .cron-schedule {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    background: var(--bg-primary);
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: var(--accent-teal);
+  }
+  .cron-timer {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+  }
+  .cron-timer span {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .cron-timer strong {
+    color: var(--text-primary);
+  }
+
+  /* Skill filter */
+  .skill-count {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .skill-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .skill-tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .skill-tab:hover { border-color: var(--text-muted); color: var(--text-primary); }
+  .skill-tab.active { border-color: var(--accent-teal); color: var(--accent-teal); background: rgba(126,232,208,0.08); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; max-width: 100vw; }
+    .hero { padding: 32px 20px; }
+    .stats-bar { padding: 16px 20px; }
+    .section { padding: 24px 20px; }
+    .card-grid-2, .card-grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* Animations */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .card { animation: fadeIn 0.3s ease forwards; }
+  .card:nth-child(1) { animation-delay: 0s; }
+  .card:nth-child(2) { animation-delay: 0.05s; }
+  .card:nth-child(3) { animation-delay: 0.1s; }
+  .card:nth-child(4) { animation-delay: 0.15s; }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--bg-hover);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-bar .fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--gradient-teal);
+    transition: width 0.5s ease;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    margin: 2px;
+  }
+  .tag-python { background: rgba(88,166,255,0.12); color: var(--accent-blue); }
+  .tag-js { background: rgba(247,223,30,0.12); color: #f7df1e; }
+  .tag-md { background: rgba(126,232,208,0.12); color: var(--accent-teal); }
+  .tag-yml { background: rgba(210,168,255,0.12); color: var(--accent-purple); }
+
+  .back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 18px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99;
+    transition: all 0.15s;
+  }
+  .back-to-top:hover { border-color: var(--accent-teal); color: var(--accent-teal); }
+  .back-to-top.visible { display: flex; }
+
+  .repository-info {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .repository-info .repo-icon { font-size: 24px; }
+  .repository-info .repo-name { font-size: 15px; font-weight: 600; }
+  .repository-info .repo-url { font-size: 13px; color: var(--accent-blue); }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h1>✨ Jinny</h1>
+    <div class="subtitle">AI Agent Dashboard</div>
+    <div class="subtitle" style="margin-top:8px; font-size:11px;">OpenClaw 2026.5.7</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Overview</div>
+    <a href="#identity" class="active"><span class="icon">🧠</span> Agent Identity</a>
+    <a href="#stats"><span class="icon">📊</span> Stats &amp; System</a>
+    <a href="#projects"><span class="icon">📁</span> Projects <span class="badge">6</span></a>
+    <a href="#skills"><span class="icon">🔧</span> Skills <span class="badge">58</span></a>
+    <a href="#cron"><span class="icon">⏰</span> Cron Jobs <span class="badge">4</span></a>
+    <div class="sidebar-section-label">Knowledge</div>
+    <a href="#filesystem"><span class="icon">🌳</span> Filesystem</a>
+    <a href="#memory"><span class="icon">💾</span> Memory</a>
+    <a href="#user"><span class="icon">👤</span> User Profile</a>
+    <div class="sidebar-section-label">Technical</div>
+    <a href="#system"><span class="icon">🖥️</span> System Info</a>
+  </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Hero -->
+  <div class="hero" id="top">
+    <h1><span class="name">✨ Jinny</span> · Agent Dashboard</h1>
+    <p>Complete visual overview of your AI agent — all projects, skills, cron jobs, files, and configuration in one place.</p>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-icon">📁</span>
+      <div><div class="stat-value">6</div><div class="stat-label">Projects</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">🔧</span>
+      <div><div class="stat-value">58</div><div class="stat-label">Skills</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">📄</span>
+      <div><div class="stat-value">~530</div><div class="stat-label">Files</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">⏰</span>
+      <div><div class="stat-value">4</div><div class="stat-label">Cron Jobs</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">💾</span>
+      <div><div class="stat-value">26 MB</div><div class="stat-label">Workspace</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">🖥️</span>
+      <div><div class="stat-value">14h+</div><div class="stat-label">Uptime</div></div>
+    </div>
+  </div>
+
+  <!-- Repository Info -->
+  <div class="section" style="padding-bottom:0;">
+    <div class="repository-info">
+      <span class="repo-icon">📦</span>
+      <div>
+        <div class="repo-name">Anurag Personal Jinny Files</div>
+        <div class="repo-url">github.com/shuklaanurag430-afk/Anurag-personal-Jinny-files</div>
+      </div>
+      <span class="badge badge-ready" style="margin-left:auto;">✓ Published</span>
+    </div>
+  </div>
+
+  <!-- Section: Agent Identity -->
+  <div class="section" id="identity">
+    <div class="section-header">
+      <span class="emoji">🧠</span>
+      <h2>Agent Identity</h2>
+    </div>
+    <div class="card-grid card-grid-4">
+      <div class="card">
+        <div class="card-title">✨ Name</div>
+        <div style="font-size:28px;font-weight:700;margin:8px 0 4px;background:linear-gradient(135deg,#7ee8d0,#58a6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Jinny</div>
+        <div class="card-desc">AI assistant &amp; personal companion</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📡 Platform</div>
+        <div class="card-desc">Telegram bot</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;font-family:monospace;">@Jinny_core_bot</div>
+      </div>
+      <div class="card">
+        <div class="card-title">🤖 Default Model</div>
+        <div class="card-desc" style="font-size:14px;font-weight:600;">DeepSeek V4 Pro</div>
+        <div class="card-desc" style="font-size:12px;color:var(--text-muted);">Quick: MiniMax M2.7 · Complex: DeepSeek R1</div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔄 Multi-Agent</div>
+        <div class="card-desc"><strong>main</strong> — Telegram (personal)</div>
+        <div class="card-desc"><strong>angelone</strong> — Slack (work)</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <table class="info-table">
+        <tr><td>OpenClaw Version</td><td>2026.5.7 (eeef486)</td></tr>
+        <tr><td>Telegram ID</td><td>1020489159</td></tr>
+        <tr><td>Gateway</td><td>Running on loopback (internal only)</td></tr>
+        <tr><td>Container</td><td>Docker container on Hostinger VPS</td></tr>
+        <tr><td>Timezone</td><td>Asia/Calcutta (IST, UTC+5:30)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section: Projects -->
+  <div class="section" id="projects">
+    <div class="section-header">
+      <span class="emoji">📁</span>
+      <h2>Projects</h2>
+    </div>
+    <div class="section-subtitle">All projects Jinny has built and maintains in the workspace</div>
+    <div class="card-grid card-grid-2">
+
+      <!-- Japan Trip -->
+      <div class="card">
+        <div class="card-title">🗾 Japan Trip</div>
+        <div class="card-desc">
+          Complete 10-night Japan itinerary (Nov 20–30, 2025). Route: Mumbai → Tokyo → Kawaguchiko → Kyoto → Nara → Osaka → Tokyo → Mumbai.
+          Includes restaurant research, logistics, and PDF exports.
+        </div>
+        <div class="card-meta">
+          <span>📄 8 files</span>
+          <span>💾 264 KB</span>
+          <span>📅 Apr 2026</span>
+          <span class="tag tag-md">Markdown</span>
+          <span class="tag tag-js">PDF</span>
+        </div>
+        <div class="progress-bar"><div class="fill" style="width:100%"></div></div>
+      </div>
+
+      <!-- Travel Orchestrator v2 -->
+      <div class="card">
+        <div class="card-title">🌍 Travel Orchestrator v2</div>
+        <div class="card-desc">
+          Multi-engine travel intelligence pipeline. SERP-based route extraction, YouTube transcript analysis,
+          Google Places enrichment. Powers Turkey, Philippines, Georgia, Thailand, and Bali research.
+          95+ enriched restaurants for Turkey alone.
+        </div>
+        <div class="card-meta">
+          <span>📄 45 files</span>
+          <span>💾 1.6 MB</span>
+          <span>🐍 Python</span>
+          <span>🗄️ SQLite DB</span>
+          <span class="tag tag-python">Python</span>
+        </div>
+        <div class="card-desc" style="margin-top:8px;font-size:12px;">
+          <strong>Engines:</strong> A (SERP routes) · B (YouTube) · C (city blogs) · D (enrichment) · E (restaurants) 
+        </div>
+      </div>
+
+      <!-- Travel Orchestrator v1 (legacy) -->
+      <div class="card">
+        <div class="card-title">🧳 Travel Orchestrator v1 (Legacy)</div>
+        <div class="card-desc">
+          Original Apify-based travel research pipeline (pre-v2). Hotel scraping, flight search, destination comparison via Apify actors.
+          Contains test scripts, debug output, and comparative analysis files.
+        </div>
+        <div class="card-meta">
+          <span>📄 60 files</span>
+          <span>💾 ~2 MB (excl. venv)</span>
+          <span>🐍 Python</span>
+          <span>🤖 Apify</span>
+          <span class="tag tag-python">Python</span>
+        </div>
+      </div>
+
+      <!-- EVOmap Evolver -->
+      <div class="card">
+        <div class="card-title">🧬 EVOmap Evolver</div>
+        <div class="card-desc">
+          GEP-powered self-evolution engine (`@evomap/evolver` v1.69.0). Analyzes runtime history to generate
+          improvement prompts. Includes full test suite, A2A protocol adapters, and evolution state tracking.
+        </div>
+        <div class="card-meta">
+          <span>📄 182 files</span>
+          <span>💾 64 MB (incl. deps)</span>
+          <span>📦 npm</span>
+          <span>📅 Installed Apr 20</span>
+          <span class="tag tag-js">Node.js</span>
+        </div>
+        <div class="card-desc" style="margin-top:8px;font-size:12px;color:var(--accent-orange);">
+          ⚠️ Status: Dormant. Last review produced hollow commit. OpenClaw's native self-reflection skill covers this territory.
+        </div>
+      </div>
+
+      <!-- AngelOneWorkspace -->
+      <div class="card">
+        <div class="card-title">💼 AngelOne Workspace</div>
+        <div class="card-desc">
+          Work agent workspace (Slack, agent: angelone). Contains DRA dashboard, Databricks knowledge base,
+          RM process docs, appraisal docs, and Slack channel memory. Separated from personal context.
+        </div>
+        <div class="card-meta">
+          <span>📄 99 files</span>
+          <span>💾 1.8 MB</span>
+          <span>📊 DRA Dashboard</span>
+          <span>🗄️ DB Knowledge Base</span>
+          <span class="badge badge-info">Work Agent</span>
+        </div>
+      </div>
+
+      <!-- Switzerland/Italy -->
+      <div class="card">
+        <div class="card-title">🇨🇭🇮🇹 Switzerland &amp; Italy Trip</div>
+        <div class="card-desc">
+          11-day itinerary planning. Route: Zurich → Lucerne → Interlaken → Milan → Como → Cinque Terre → Florence → Rome.
+          Final hybrid design combining pricing research and geo optimization. PDF exports included.
+        </div>
+        <div class="card-meta">
+          <span>📄 8 files</span>
+          <span>💾 500 KB</span>
+          <span>📅 May 2026</span>
+          <span class="tag tag-md">Markdown</span>
+          <span class="tag tag-js">PDF</span>
+        </div>
+        <div class="progress-bar"><div class="fill" style="width:90%"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section: Skills -->
+  <div class="section" id="skills">
+    <div class="section-header">
+      <span class="emoji">🔧</span>
+      <h2>Skills Inventory</h2>
+    </div>
+    <div class="section-subtitle">58 skills installed — 18 workspace/bundled, 40 bundled-only</div>
+    
+    <div class="skill-tabs" id="skillTabs">
+      <button class="skill-tab active" data-filter="all">All (58)</button>
+      <button class="skill-tab" data-filter="ready">✓ Ready (22)</button>
+      <button class="skill-tab" data-filter="setup">△ Needs Setup (36)</button>
+      <button class="skill-tab" data-filter="workspace">📦 Workspace (5)</button>
+    </div>
+
+    <div id="workspaceSkills" style="margin-bottom:24px;">
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--accent-teal);">📦 Workspace Skills</div>
+      <div class="card-grid card-grid-4">
+        <div class="card"><div class="card-title"><span class="badge badge-ready">✓</span> apify</div><div class="card-desc">Run Apify Actors for web scraping</div></div>
+        <div class="card"><div class="card-title"><span class="badge badge-ready">✓</span> brainstorming</div><div class="card-desc">Design exploration before creative work</div></div>
+        <div class="card"><div class="card-title"><span class="badge badge-ready">✓</span> self-reflection</div><div class="card-desc">Continuous self-improvement through structured reflection</div></div>
+        <div class="card"><div class="card-title"><span class="badge badge-ready">✓</span> serpapi</div><div class="card-desc">Unified search across Google, Amazon, Yelp</div></div>
+        <div class="card"><div class="card-title"><span class="badge badge-ready">✓</span> terse-mode</div><div class="card-desc">Compressed communication mode</div></div>
+      </div>
+    </div>
+
+    <div id="bundledSkills">
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--accent-blue);">📦 Bundled Skills (OpenClaw)</div>
+      <div class="card-grid card-grid-4" id="bundledSkillsGrid">
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> clawhub</div><div class="card-desc">Search/install skills from ClawHub registry</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> gog</div><div class="card-desc">Google Workspace (Gmail, Calendar, Drive)</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> healthcheck</div><div class="card-desc">Host security hardening audits</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> himalaya</div><div class="card-desc">IMAP/SMTP email management</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> mcporter</div><div class="card-desc">MCP server/tool management</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> node-connect</div><div class="card-desc">Diagnose device pairing failures</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> skill-creator</div><div class="card-desc">Create/edit/audit AgentSkills</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> slack</div><div class="card-desc">Slack messaging &amp; reactions</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> taskflow</div><div class="card-desc">Durable flow orchestration for agents</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> weather</div><div class="card-desc">Current weather &amp; forecasts</div></div>
+        <div class="card" data-status="ready"><div class="card-title"><span class="badge badge-ready">✓</span> xurl</div><div class="card-desc">X (Twitter) API client</div></div>
+        <div class="card" data-status="setup"><div class="card-title"><span class="badge badge-setup">△</span> browser-automation</div><div class="card-desc">Control web pages with browser tool</div></div>
+        <div class="card" data-status="setup"><div class="card-title"><span class="badge badge-setup">△</span> coding-agent</div><div class="card-desc">Delegate coding to Codex/Claude Code</div></div>
+        <div class="card" data-status="setup"><div class="card-title"><span class="badge badge-setup">△</span> discord</div><div class="card-desc">Discord messaging &amp; channels</div></div>
+        <div class="card" data-status="setup"><div class="card-title"><span class="badge badge-setup">△</span> github</div><div class="card-desc">GitHub issues, PRs, CI, releases</div></div>
+        <div class="card" data-status="setup"><div class="card-title"><span class="badge badge-setup">△</span> gemini</div><div class="card-desc">Gemini CLI for Q&A &amp; generation</div></div>
+        <div class="card" data-status="setup"><div class="card-title"><span class="badge badge-setup">△</span> notion</div><div class="card-desc">Notion API for pages &amp; databases</div></div>
+        <div class="card" data-status="setup"><div class="card-title"><span class="badge badge-setup">△</span> sag</div><div class="card-desc">ElevenLabs text-to-speech</div></div>
+        <div class="card" data-status="setup"><div class="card-title"><span class="badge badge-setup">△</span> songsee</div><div class="card-desc">Shazam-like audio identification</div></div>
+        <div class="card" data-status="setup"><div class="card-title"><span class="badge badge-setup">△</span> summarize</div><div class="card-desc">Smart context summarization</div></div>
+      </div>
+      <div style="margin-top:12px;font-size:13px;color:var(--text-muted);">
+        + 20 more bundled skills (1password, apple-notes, bear-notes, blogwatcher, blucli, bluebubbles, camsnap, eightctl, gh-issues, gifgrep, goplaces, imsg, model-usage, nano-pdf, obsidian, openai-whisper, openhue, oracle, ordercli, peekaboo, session-logs, sherpa-onnx-tts, spotify-player, taskflow-inbox-triage, things-mac, trello, video-frames, voice-call, wacli)
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Cron Jobs -->
+  <div class="section" id="cron">
+    <div class="section-header">
+      <span class="emoji">⏰</span>
+      <h2>Cron Jobs</h2>
+    </div>
+    <div class="section-subtitle">4 scheduled tasks keeping Jinny running in the background</div>
+    <div class="card-grid card-grid-2">
+      
+      <div class="card cron-card">
+        <div class="card-title">
+          <span class="dot dot-green"></span> Memory Dreaming Promotion
+          <span class="badge badge-ok" style="margin-left:auto;">Active</span>
+        </div>
+        <div class="card-desc">Promotes short-term memories to long-term MEMORY.md. Runs nightly to consolidate daily logs into curated wisdom.</div>
+        <div class="cron-timer">
+          <span>⏱ <strong class="cron-schedule">0 3 * * *</strong></span>
+          <span>🕐 <strong>3:00 AM IST</strong> daily</span>
+          <span>➡️ <strong>in 7h</strong></span>
+        </div>
+        <div class="card-meta">
+          <span>✓ Last: 17h ago — ok</span>
+        </div>
+      </div>
+
+      <div class="card cron-card">
+        <div class="card-title">
+          <span class="dot dot-green"></span> Work Agent Memory Dreaming
+          <span class="badge badge-ok" style="margin-left:auto;">Active</span>
+        </div>
+        <div class="card-desc">Same as above but for the angelone work agent. Processes Slack session data into AngelOneWorkspace memory.</div>
+        <div class="cron-timer">
+          <span>⏱ <strong class="cron-schedule">0 4 * * *</strong></span>
+          <span>🕐 <strong>4:00 AM IST</strong> daily</span>
+          <span>➡️ <strong>in 8h</strong></span>
+        </div>
+        <div class="card-meta">
+          <span>✓ Last: 16h ago — ok</span>
+        </div>
+      </div>
+
+      <div class="card cron-card">
+        <div class="card-title">
+          <span class="dot dot-green"></span> Daily News Briefing
+          <span class="badge badge-ok" style="margin-left:auto;">Active</span>
+        </div>
+        <div class="card-desc">Sends curated daily news to Telegram (fintech, D2C F&B, travel). Uses MiniMax M2.7 for speed.</div>
+        <div class="cron-timer">
+          <span>⏱ <strong class="cron-schedule">45 8 * * *</strong></span>
+          <span>🕐 <strong>8:45 AM IST</strong> daily</span>
+          <span>➡️ <strong>in 12h</strong></span>
+        </div>
+        <div class="card-meta">
+          <span>✓ Last: 12h ago — ok</span>
+          <span>🤖 Model: MiniMax M2.7</span>
+        </div>
+      </div>
+
+      <div class="card cron-card">
+        <div class="card-title">
+          <span class="dot dot-red"></span> EvoMap Review Reminder
+          <span class="badge badge-error" style="margin-left:auto;">Error</span>
+        </div>
+        <div class="card-desc">Bi-weekly reminder to run EvoMap evolver review. Currently in error state — probably because EVOmap session logs or dependencies are stale.</div>
+        <div class="cron-timer">
+          <span>⏱ <strong class="cron-schedule">0 10 */14 * *</strong></span>
+          <span>🕐 <strong>10:00 AM IST</strong> every 14 days</span>
+          <span>➡️ <strong>in 14d</strong></span>
+        </div>
+        <div class="card-meta">
+          <span>✗ Last: 10h ago — error</span>
+          <span>🤖 Model: MiniMax M2.7</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section: Filesystem -->
+  <div class="section" id="filesystem">
+    <div class="section-header">
+      <span class="emoji">🌳</span>
+      <h2>Workspace Filesystem</h2>
+    </div>
+    <div class="section-subtitle">Click folders to expand — full workspace tree (excluding node_modules, .git)</div>
+    <div class="tree" id="workspaceTree">
+      
+      <!-- Root level -->
+      <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> /workspace/</div>
+      <div class="tree-children">
+        
+        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> skills/ <span class="file-size">18 files — 932 KB</span></div>
+        <div class="tree-children">
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> apify/</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> brainstorming/</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> self-reflection/</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> serpapi/</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> terse-mode/</div>
+        </div>
+
+        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> Japan_Trip/ <span class="file-size">8 files — 264 KB</span></div>
+        <div class="tree-children">
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Japan_Trip_Itinerary.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Japan_Food_Research.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Merged_Itinerary.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Comparison_Table.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Restaurant_Research_Notes.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> *.pdf (3 PDF exports)</div>
+        </div>
+
+        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> Travel_Orchestrator_v2/ <span class="file-size">45 files — 1.6 MB</span></div>
+        <div class="tree-children">
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> engines/</div>
+          <div class="tree-item" style="padding-left:20px;color:var(--text-muted);font-size:12px;">engine_a_dag.py · engine_b.py · engine_c_dag.py · engine_e_enricher.py</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> core/</div>
+          <div class="tree-item" style="padding-left:20px;color:var(--text-muted);font-size:12px;">dag_orchestrator.py · unifier_agent.py · final_unifier.py</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Turkey_Master_Itinerary.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Switzerland_Italy_Final_Itinerary.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> travel_intelligence.db</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> 20+ test scripts &amp; utilities</div>
+        </div>
+
+        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> travel_orchestrator/ (v1 legacy) <span class="file-size">60 files — ~2 MB</span></div>
+        <div class="tree-children">
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> main.py · database.py · agents.py · tools.py</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> compare_destinations.py · destination_comparison.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> 30+ test/debug scripts</div>
+        </div>
+
+        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> evolver/ <span class="file-size">182 files — 64 MB (incl. deps)</span></div>
+        <div class="tree-children">
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> index.js — main entry</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> SKILL.md — capability definition</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> src/ — adapters, GEP, proxy, ATP</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> scripts/ — A2A export/ingest, validate</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> test/ — 20+ Jest test files</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> assets/ — cover art, GEP assets</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> review.sh · run.sh</div>
+        </div>
+
+        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> AngelOneWorkspace/ <span class="file-size">99 files — 1.8 MB</span></div>
+        <div class="tree-children">
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> SOUL.md · IDENTITY.md · USER.md · MEMORY.md · AGENTS.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> DRA-dashboard/ — dashboard.html, css, js</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> databricks_knowledge_base/ — 5 doc files</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> RM_Team_Process.md · FDS_Process_Gaps_Summary.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> TASK_LIST.md · HEARTBEAT.md</div>
+        </div>
+
+        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> memory/ <span class="file-size">131 files — 15 MB</span></div>
+        <div class="tree-children">
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Daily logs: 2026-04-09 through 2026-05-13</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Special logs: deepseek-v4-pro, model-confirmation</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> dreaming/ — dream state processing</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> evolution/ — GEP evolution state</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> heartbeat-state.json</div>
+        </div>
+
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> SOUL.md — Who Jinny is</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> IDENTITY.md — Agent identity record</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> USER.md — About Anurag</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> MEMORY.md — Long-term curated memory</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> TOOLS.md — VPS architecture reference</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> HEARTBEAT.md — Periodic check config</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> AGENTS.md — Workspace template</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> DREAMS.md — Dreaming system</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> BOOT.md — Bootstrap instructions</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> production_run_log.md</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> .env — Config (not shown)</div>
+        <div class="tree-item"><span class="arrow"></span><span class="file-icon">🔒</span> .credentials/ — Auth config (not shown)</div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: User Profile -->
+  <div class="section" id="user">
+    <div class="section-header">
+      <span class="emoji">👤</span>
+      <h2>User Profile</h2>
+    </div>
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="card-title">👤 Anurag</div>
+        <table class="info-table">
+          <tr><td>Full Name</td><td>Anurag Shukla</td></tr>
+          <tr><td>Telegram</td><td>@shuklaanurag430</td></tr>
+          <tr><td>Timezone</td><td>Asia/Calcutta (IST, UTC+5:30)</td></tr>
+          <tr><td>Location</td><td>Thane, Maharashtra, India</td></tr>
+          <tr><td>GitHub</td><td>shuklaanurag430-afk</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">💼 Professional</div>
+        <table class="info-table">
+          <tr><td>Role</td><td>Chief Manager at Angel One</td></tr>
+          <tr><td>Function</td><td>Data &amp; analytics for acquisition channel</td></tr>
+          <tr><td>Industry</td><td>FinTech / Stock Broking</td></tr>
+        </table>
+        <div class="card-title" style="margin-top:16px;">🎯 Interests</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">
+          <span class="tag">D2C F&B</span>
+          <span class="tag">International Travel</span>
+          <span class="tag">Flight Deals</span>
+          <span class="tag">Investing</span>
+          <span class="tag">Biohacking</span>
+          <span class="tag">Testosterone Optimization</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: System Info -->
+  <div class="section" id="system">
+    <div class="section-header">
+      <span class="emoji">🖥️</span>
+      <h2>System Information</h2>
+    </div>
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="card-title">🖥️ Host</div>
+        <table class="info-table">
+          <tr><td>Type</td><td>Docker container (containerd) on Hostinger VPS</td></tr>
+          <tr><td>OS</td><td>Debian 13 (Trixie)</td></tr>
+          <tr><td>Kernel</td><td>Linux 6.8.0-106-generic x86_64</td></tr>
+          <tr><td>CPU</td><td>AMD EPYC 9355P (4 cores allocated)</td></tr>
+          <tr><td>Container</td><td>Docker (containerd) on Hostinger</td></tr>
+          <tr><td>Public IP</td><td>Secured via VPS firewall</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">💾 Resources</div>
+        <table class="info-table">
+          <tr><td>RAM Total</td><td>16 GB</td></tr>
+          <tr><td>RAM Used</td><td>~1.2 GB (7.5%)</td></tr>
+          <tr><td>Disk Total</td><td>200 GB</td></tr>
+          <tr><td>Disk Used</td><td>~20 GB (11%)</td></tr>
+          <tr><td>Disk Free</td><td>~174 GB</td></tr>
+          <tr><td>Node.js</td><td>v22.22.2</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">⚙️ OpenClaw</div>
+        <table class="info-table">
+          <tr><td>Version</td><td>2026.5.7 (eeef486)</td></tr>
+          <tr><td>Gateway</td><td>Active on internal port</td></tr>
+          <tr><td>Gateway Scope</td><td>Loopback only (not public)</td></tr>
+          <tr><td>Runtime</td><td>Node.js (no systemd)</td></tr>
+          <tr><td>Default Model</td><td>DeepSeek V4 Pro</td></tr>
+          <tr><td>Quick Model</td><td>MiniMax M2.7</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">🔐 Security</div>
+        <table class="info-table">
+          <tr><td>OpenClaw User</td><td>node (uid=1000, sudo NOPASSWD)</td></tr>
+          <tr><td>Root Access</td><td>Available via sudo</td></tr>
+          <tr><td>Gateway Exposure</td><td>Internal only</td></tr>
+          <tr><td>Secrets</td><td>Stored securely, not exposed</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="padding:32px 40px;text-align:center;color:var(--text-muted);font-size:13px;border-top:1px solid var(--border-soft);">
+    <p>✨ Jinny · Built on OpenClaw 2026.5.7 · Hosted on Hostinger VPS</p>
+    <p style="margin-top:4px;">Generated: <span id="generatedDate"></span> IST</p>
+  </div>
+
+</div>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  // Tree toggle
+  function toggleTree(el) {
+    const arrow = el.querySelector('.arrow');
+    const children = el.nextElementSibling;
+    if (children && children.classList.contains('tree-children')) {
+      children.classList.toggle('hidden');
+      arrow.classList.toggle('open');
+    }
+  }
+
+  // Collapse all tree branches initially (show only root level)
+  document.querySelectorAll('.tree-children').forEach(el => {
+    if (!el.parentElement.querySelector('.tree-item .arrow')) return;
+    el.classList.add('hidden');
+  });
+
+  // Sidebar active state
+  document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', function() {
+      document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Scroll spy
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('backToTop');
+    if (window.scrollY > 400) btn.classList.add('visible');
+    else btn.classList.remove('visible');
+  });
+
+  // Skill filter tabs
+  document.querySelectorAll('.skill-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.skill-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const filter = this.dataset.filter;
+      document.querySelectorAll('#bundledSkillsGrid .card').forEach(card => {
+        if (filter === 'all') card.style.display = '';
+        else if (filter === 'workspace') card.style.display = 'none';
+        else if (card.dataset.status === filter) card.style.display = '';
+        else card.style.display = 'none';
+      });
+      document.getElementById('workspaceSkills').style.display = 
+        (filter === 'all' || filter === 'workspace' || filter === 'ready') ? '' : 'none';
+    });
+  });
+
+  // Date
+  document.getElementById('generatedDate').textContent = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+</script>
+</body>
+</html>
