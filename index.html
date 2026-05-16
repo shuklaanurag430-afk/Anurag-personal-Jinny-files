@@ -588,21 +588,15 @@
       </div>
 
       <!-- EVOmap Evolver -->
-      <div class="card">
-        <div class="card-title">🧬 EVOmap Evolver</div>
+      <div class="card" style="opacity:0.5;">
+        <div class="card-title">🧬 EVOmap Evolver <span class="badge badge-setup" style="margin-left:auto;">Removed</span></div>
         <div class="card-desc">
-          GEP-powered self-evolution engine (`@evomap/evolver` v1.69.0). Analyzes runtime history to generate
-          improvement prompts. Includes full test suite, A2A protocol adapters, and evolution state tracking.
+          GEP-powered self-evolution engine (`@evomap/evolver` v1.69.0). Was installed Apr 20, 2026.
+          Folder removed from workspace. OpenClaw's native self-reflection skill covers this territory.
         </div>
         <div class="card-meta">
-          <span>📄 182 files</span>
-          <span>💾 64 MB (incl. deps)</span>
-          <span>📦 npm</span>
+          <span>🗑️ Removed from disk</span>
           <span>📅 Installed Apr 20</span>
-          <span class="tag tag-js">Node.js</span>
-        </div>
-        <div class="card-desc" style="margin-top:8px;font-size:12px;color:var(--accent-orange);">
-          ⚠️ Status: Dormant. Last review produced hollow commit. OpenClaw's native self-reflection skill covers this territory.
         </div>
       </div>
 
@@ -758,18 +752,17 @@
 
       <div class="card cron-card">
         <div class="card-title">
-          <span class="dot dot-red"></span> EvoMap Review Reminder
-          <span class="badge badge-error" style="margin-left:auto;">Error</span>
+          <span class="dot dot-gray"></span> EvoMap Review Reminder
+          <span class="badge badge-setup" style="margin-left:auto;">Removed</span>
         </div>
-        <div class="card-desc">Bi-weekly reminder to run EvoMap evolver review. Currently in error state — probably because EVOmap session logs or dependencies are stale.</div>
+        <div class="card-desc">Bi-weekly reminder to run EvoMap evolver review. Folder removed from disk — this cron is no longer relevant.</div>
         <div class="cron-timer">
           <span>⏱ <strong class="cron-schedule">0 10 */14 * *</strong></span>
           <span>🕐 <strong>10:00 AM IST</strong> every 14 days</span>
-          <span>➡️ <strong>in 14d</strong></span>
+          <span>➡️ <strong>stale</strong></span>
         </div>
         <div class="card-meta">
-          <span>✗ Last: 10h ago — error</span>
-          <span>🤖 Model: MiniMax M2.7</span>
+          <span>🗑️ Cron needs cleanup</span>
         </div>
       </div>
 
@@ -820,41 +813,33 @@
           <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> 20+ test scripts &amp; utilities</div>
         </div>
 
-        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> travel_orchestrator/ (v1 legacy) <span class="file-size">60 files — ~2 MB</span></div>
-        <div class="tree-children">
-          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> main.py · database.py · agents.py · tools.py</div>
-          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> compare_destinations.py · destination_comparison.md</div>
-          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> 30+ test/debug scripts</div>
-        </div>
-
-        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> evolver/ <span class="file-size">182 files — 64 MB (incl. deps)</span></div>
-        <div class="tree-children">
-          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> index.js — main entry</div>
-          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> SKILL.md — capability definition</div>
-          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> src/ — adapters, GEP, proxy, ATP</div>
-          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> scripts/ — A2A export/ingest, validate</div>
-          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> test/ — 20+ Jest test files</div>
-          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> assets/ — cover art, GEP assets</div>
-          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> review.sh · run.sh</div>
-        </div>
-
-        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> AngelOneWorkspace/ <span class="file-size">99 files — 1.8 MB</span></div>
+        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> AngelOneWorkspace/ <span class="file-size">99 files — 2.2 MB</span></div>
         <div class="tree-children">
           <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> SOUL.md · IDENTITY.md · USER.md · MEMORY.md · AGENTS.md</div>
           <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> DRA-dashboard/ — dashboard.html, css, js</div>
-          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> databricks_knowledge_base/ — 5 doc files</div>
-          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> RM_Team_Process.md · FDS_Process_Gaps_Summary.md</div>
-          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> TASK_LIST.md · HEARTBEAT.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> databricks_knowledge_base/ — 6 doc files</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> RM_Team_Process.md · RM_Process_Improvements.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> FDS_Process_Gaps_Summary.md · RM_Tracking_Emails.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> TASK_LIST.md · HEARTBEAT.md · memory.md</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> file-visualizer/ — workspace-visualizer.html</div>
+        </div>
+
+        <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> Anurag-personal-Jinny-files/ <span class="file-size">1 file — 316 KB</span></div>
+        <div class="tree-children">
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> index.html — Personal Jinny Files Dashboard</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> .git/ — GitHub Pages repo</div>
         </div>
 
         <div class="tree-item" onclick="toggleTree(this)"><span class="arrow">▶</span><span class="folder-icon">📁</span> memory/ <span class="file-size">131 files — 15 MB</span></div>
         <div class="tree-children">
-          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Daily logs: 2026-04-09 through 2026-05-13</div>
+          <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Daily logs: 2026-04-09 through 2026-05-16</div>
           <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> Special logs: deepseek-v4-pro, model-confirmation</div>
           <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> dreaming/ — dream state processing</div>
-          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> evolution/ — GEP evolution state</div>
+          <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> .dreams/ — session corpus for dreaming</div>
           <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> heartbeat-state.json</div>
         </div>
+
+        <div class="tree-item"><span class="arrow"></span><span class="folder-icon">📁</span> slack/ <span class="file-size">1 file — 4.5 KB</span></div>
 
         <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> SOUL.md — Who Jinny is</div>
         <div class="tree-item"><span class="arrow"></span><span class="file-icon">📄</span> IDENTITY.md — Agent identity record</div>
